@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Web;
 
 namespace PublicApi.Services
 {
@@ -29,7 +28,6 @@ namespace PublicApi.Services
 			}
 		}
 
-
 		public BlogPostService(IOptions<BlogPostServiceSettings> options, PublicApiContext context) : base(options)
 		{
 			_context = context;
@@ -40,30 +38,15 @@ namespace PublicApi.Services
 			return _context.BlogPosts.Where(blogPost => blogPost.Slug == slug).FirstOrDefault();
 		}
 
-		public IBlogPost RelativeToAbsolute(IBlogPost blogPost)
+		public string ToAbsoluteUrl(string path)
 		{
-			if (!(blogPost is BlogPost blogPostModel))
-			{
-				return blogPost;
-			}
-
-			blogPostModel.RelativeUrl = ToAbsolute(blogPost.RelativeUrl);
-			blogPostModel.ImageUrl = ToAbsolute(blogPost.ImageUrl);
-			return blogPostModel;
-		}
-
-		private string ToAbsolute(string relative)
-		{
-			if (!string.IsNullOrEmpty(relative))
-			{
-				return _options.GetUrl(relative);
-			}
-			return relative;
+			return UrlUtils.Join(_options.Host, path);
 		}
 
 		public void RefreshBlogPosts()
 		{
-			HttpResponseMessage response = HttpClient.GetAsync(_options.DataUrl).GetAwaiter().GetResult();
+			string dataUrl = ToAbsoluteUrl(_options.DataPath);
+			HttpResponseMessage response = HttpClient.GetAsync(dataUrl).GetAwaiter().GetResult();
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				_context.Truncate<BlogPost>();

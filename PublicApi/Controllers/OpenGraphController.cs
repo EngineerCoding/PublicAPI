@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Infrastructure;
+using PublicApi.ViewModels;
+using System;
 
 namespace PublicApi.Controllers
 {
@@ -23,8 +26,24 @@ namespace PublicApi.Controllers
 				return NotFound();
 			}
 
-			IBlogPost enriched = _blogPostService.RelativeToAbsolute(blogPost);
-			return View(enriched);
+
+			string currentUri = Request.GetDisplayUrl();
+			if (currentUri.StartsWith(Uri.UriSchemeHttp))
+			{
+				currentUri = Uri.UriSchemeHttps + currentUri.Substring(Uri.UriSchemeHttp.Length);
+			}
+
+			return View(new BlogPostViewModel
+			{
+				Title = blogPost.Title,
+				Slug = blogPost.Slug,
+				Description = blogPost.Description,
+				ImageUrl = _blogPostService.ToAbsoluteUrl(blogPost.ImageUrl),
+				ImageDescriptionAlt = blogPost.ImageDescriptionAlt,
+				Url = _blogPostService.ToAbsoluteUrl(blogPost.RelativeUrl),
+				Author = blogPost.Author,
+				CurrentUrl = currentUri,
+			});
 		}
 
 		[HttpPost("Refresh")]

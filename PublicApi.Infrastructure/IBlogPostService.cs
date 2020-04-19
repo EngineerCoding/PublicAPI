@@ -2,7 +2,7 @@
 {
 	public interface IBlogPostService
 	{
-		IBlogPost RelativeToAbsolute(IBlogPost blogPost);
+		string ToAbsoluteUrl(string path);
 
 		IBlogPost GetBlogPostForSlug(string slug);
 
