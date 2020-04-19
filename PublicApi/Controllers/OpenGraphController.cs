@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PublicApi.Infrastructure;
@@ -46,6 +47,7 @@ namespace PublicApi.Controllers
 			});
 		}
 
+		[EnableCors(Startup.AdminCorsPolicy)]
 		[HttpPost("Refresh")]
 		[Authorize]
 		public IActionResult RefreshBlogPosts()
