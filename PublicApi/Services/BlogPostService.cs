@@ -14,7 +14,7 @@ namespace PublicApi.Services
 	public class BlogPostService : OptionsService<BlogPostServiceSettings>, IBlogPostService
 	{
 		private readonly PublicApiContext _context;
-		
+
 		private HttpClient _httpClient;
 		private HttpClient HttpClient
 		{
@@ -81,6 +81,7 @@ namespace PublicApi.Services
 		private static string TitleToSlug(string title)
 		{
 			string slugified = Regex.Replace(title.ToLowerInvariant(), @"\s", "-");
+			slugified = Regex.Replace(slugified, @"[^\w\-]", string.Empty);
 			return slugified;
 		}
 	}
