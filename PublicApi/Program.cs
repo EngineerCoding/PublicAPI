@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PublicApi.Models;
+using Serilog;
+using System;
+using System.IO;
 
 namespace PublicApi
 {
@@ -10,27 +14,53 @@ namespace PublicApi
 	{
 		public static void Main(string[] args)
 		{
-			IHost host = CreateHostBuilder(args).Build();
+			IConfiguration configuration = new ConfigurationBuilder()
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json")
+				.Build();
 
-			using (IServiceScope scope = host.Services.CreateScope())
+			Log.Logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(configuration)
+				.CreateLogger();
+
+			IHost host;
+			try
 			{
-				DbContext context = scope.ServiceProvider.GetService<PublicApiContext>();
-				context.Database.Migrate();
+				Log.Logger.Information("App is initializing");
+				host = CreateHostBuilder(args).Build();
+				using (IServiceScope scope = host.Services.CreateScope())
+				{
+					DbContext context = scope.ServiceProvider.GetService<PublicApiContext>();
+					context.Database.Migrate();
+				}
+
+				Log.Logger.Information("App is initialized");
+			}
+			catch (Exception e)
+			{
+				Log.Logger.Error(e, "Exception occurred during app initialization");
+				throw;
 			}
 
-			host.Run();
+			try
+			{
+				host.Run();
+			}
+			catch (Exception e)
+			{
+				Log.Logger.Error(e, "Exception occurred during in app");
+				throw;
+			}
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args)
 		{
 			return Host.CreateDefaultBuilder(args)
+				.UseSerilog()
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
-					webBuilder.ConfigureKestrel(serverOptions =>
-					{
-
-					})
-					.UseStartup<Startup>();
+					webBuilder.ConfigureKestrel(action => { })
+						.UseStartup<Startup>();
 				});
 		}
 	}
