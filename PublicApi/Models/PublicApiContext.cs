@@ -6,7 +6,8 @@ namespace PublicApi.Models
 	{
 		public DbSet<BlogPost> BlogPosts { get; set; }
 
-		public PublicApiContext(DbContextOptions<PublicApiContext> contextOptions) : base(contextOptions)
+		public PublicApiContext(DbContextOptions<PublicApiContext> contextOptions)
+			: base(contextOptions)
 		{
 		}
 

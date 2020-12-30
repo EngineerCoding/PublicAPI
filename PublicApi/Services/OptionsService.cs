@@ -5,11 +5,18 @@ namespace PublicApi.Services
 	public abstract class OptionsService<T>
 		where T : class, new()
 	{
-		protected readonly T _options;
+		/// <summary>
+		/// The options
+		/// </summary>
+		protected readonly T options;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OptionsService{T}"/> class.
+		/// </summary>
+		/// <param name="options">The injected options.</param>
 		public OptionsService(IOptions<T> options)
 		{
-			_options = options.Value;
+			this.options = options.Value;
 		}
 	}
 }

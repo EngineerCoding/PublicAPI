@@ -4,6 +4,14 @@
 	{
 		private const string PathSeparator = "/";
 
+		/// <summary>
+		/// Joins the specified host with the specified path.
+		/// </summary>
+		/// <param name="host">The host.</param>
+		/// <param name="path">The path.</param>
+		/// <returns>
+		/// The Join url
+		/// </returns>
 		public static string Join(string host, string path)
 		{
 			bool hostEndsWith = host.EndsWith(PathSeparator);

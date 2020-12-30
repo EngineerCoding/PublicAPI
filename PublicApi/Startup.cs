@@ -59,7 +59,7 @@ namespace PublicApi
 
 			services.Configure<BlogPostServiceSettings>(Configuration.GetSection("BlogPost"));
 
-			services.AddTransient<IBlogPostService, BlogPostService>();
+			services.AddScoped<IBlogPostService, BlogPostService>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
